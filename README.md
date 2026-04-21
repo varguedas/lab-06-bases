@@ -1,3 +1,3 @@
 # lab-06-bases
 
-[![Enhancement](https://img.shields.io/github/issues/varguedas/lab-06-bases/enhancement?style=for-the-badge&logo=github&color=blue)](https://github.com/yourusername/yourrepo/labels/enhancement) Usar como nombre de base de datos "hashy"
+[![⚠️ Enhancement: DB 'hashy'](https://img.shields.io/github/issues/tuusuario/turepo/enhancement?style=for-the-badge&logo=exclamation-triangle&color=yellow)](https://github.com/varguedas/lab-06-bases/labels/enhancement) Usar como nombre de base de datos "hashy"
