@@ -64,3 +64,66 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+--Persona B
+--LLAVE 3
+CREATE DATABASE IF NOT EXISTS hashy;
+USE hashy;
+
+DROP FUNCTION IF EXISTS fn_espia_tortuga;
+DROP FUNCTION IF EXISTS fn_purificador;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_espia_tortuga(
+    p_categoria VARCHAR(100),
+    p_precio_finca DECIMAL(10,2)
+)
+RETURNS DECIMAL(3,2)
+DETERMINISTIC
+BEGIN
+    DECLARE v_precio_referencia DECIMAL(10,2);
+    DECLARE v_factor DECIMAL(3,2);
+
+    IF p_categoria IS NULL OR p_precio_finca IS NULL THEN
+        SET v_factor = 1.0;
+    ELSE
+        SELECT AVG(precio_referencia)
+        INTO v_precio_referencia
+        FROM mercado_negro
+        WHERE categoria = p_categoria;
+
+        IF v_precio_referencia IS NULL THEN
+            SET v_factor = 1.0;
+        ELSE
+            IF p_precio_finca > v_precio_referencia THEN
+                SET v_factor = 1.2;
+            ELSE
+                SET v_factor = 0.8;
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN v_factor;
+END $$
+
+CREATE FUNCTION fn_purificador(
+    p_nombre_sucio TEXT
+)
+RETURNS TEXT
+DETERMINISTIC
+BEGIN
+    DECLARE v_texto_limpio TEXT;
+    DECLARE v_resultado TEXT;
+
+    IF p_nombre_sucio IS NULL THEN
+        SET v_resultado = '';
+    ELSE
+        SET v_texto_limpio = REGEXP_REPLACE(p_nombre_sucio, '[^A-Za-z]', '');
+        SET v_resultado = TRIM(v_texto_limpio);
+    END IF;
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
