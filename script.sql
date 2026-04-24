@@ -127,3 +127,39 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+--Persona C
+--LLAVE 5
+DROP FUNCTION IF EXISTS fn_escultor;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_escultor(
+    p_texto TEXT,
+    p_factor DECIMAL(3,2)
+)
+RETURNS TEXT
+DETERMINISTIC
+BEGIN
+    DECLARE v_texto_transformado TEXT;
+    DECLARE v_sufijo VARCHAR(50);
+    DECLARE v_resultado TEXT;
+
+    IF p_texto IS NULL THEN
+        SET v_texto_transformado = '';
+    ELSE
+        IF p_factor > 1 THEN
+            SET v_texto_transformado = UPPER(p_texto);
+            SET v_sufijo = ' - ALTA PRIORIDAD';
+        ELSE
+            SET v_texto_transformado = LOWER(p_texto);
+            SET v_sufijo = ' - baja prioridad';
+        END IF;
+    END IF;
+
+    SET v_resultado = CONCAT(v_texto_transformado, v_sufijo);
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
