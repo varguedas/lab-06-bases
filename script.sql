@@ -206,3 +206,32 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+--Llave 7
+DROP FUNCTION IF EXISTS fn_gran_sello;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_gran_sello(
+    p_texto TEXT
+)
+RETURNS VARCHAR(255)
+DETERMINISTIC
+BEGIN
+    DECLARE v_texto_base TEXT;
+    DECLARE v_hash VARCHAR(255);
+    DECLARE v_resultado VARCHAR(255);
+
+    IF p_texto IS NULL THEN
+        SET v_texto_base = '';
+    ELSE
+        SET v_texto_base = p_texto;
+    END IF;
+
+    SET v_hash = MD5(v_texto_base);
+    SET v_resultado = v_hash;
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
