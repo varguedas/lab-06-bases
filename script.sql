@@ -163,3 +163,46 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+--Llave 6
+DROP FUNCTION IF EXISTS fn_notario;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_notario(
+    p_texto TEXT
+)
+RETURNS TEXT
+NOT DETERMINISTIC
+MODIFIES SQL DATA
+BEGIN
+    DECLARE v_usuario VARCHAR(100);
+    DECLARE v_mensaje TEXT;
+    DECLARE v_resultado TEXT;
+
+    IF p_texto IS NULL THEN
+        SET v_resultado = '';
+    ELSE
+        SET v_resultado = p_texto;
+    END IF;
+
+    SET v_usuario = CURRENT_USER();
+    SET v_mensaje = CONCAT('Texto procesado: ', v_resultado);
+
+    INSERT INTO logs_hashy (
+        nombre_funcion,
+        fecha_ejecucion,
+        mensaje_accion,
+        usuario_db
+    )
+    VALUES (
+        'fn_notario',
+        CURRENT_TIMESTAMP,
+        v_mensaje,
+        v_usuario
+    );
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
