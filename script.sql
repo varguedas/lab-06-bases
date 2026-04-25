@@ -127,3 +127,111 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+--Persona C
+--LLAVE 5
+DROP FUNCTION IF EXISTS fn_escultor;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_escultor(
+    p_texto TEXT,
+    p_factor DECIMAL(3,2)
+)
+RETURNS TEXT
+DETERMINISTIC
+BEGIN
+    DECLARE v_texto_transformado TEXT;
+    DECLARE v_sufijo VARCHAR(50);
+    DECLARE v_resultado TEXT;
+
+    IF p_texto IS NULL THEN
+        SET v_texto_transformado = '';
+    ELSE
+        IF p_factor > 1 THEN
+            SET v_texto_transformado = UPPER(p_texto);
+            SET v_sufijo = ' - ALTA PRIORIDAD';
+        ELSE
+            SET v_texto_transformado = LOWER(p_texto);
+            SET v_sufijo = ' - baja prioridad';
+        END IF;
+    END IF;
+
+    SET v_resultado = CONCAT(v_texto_transformado, v_sufijo);
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
+
+--Llave 6
+DROP FUNCTION IF EXISTS fn_notario;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_notario(
+    p_texto TEXT
+)
+RETURNS TEXT
+NOT DETERMINISTIC
+MODIFIES SQL DATA
+BEGIN
+    DECLARE v_usuario VARCHAR(100);
+    DECLARE v_mensaje TEXT;
+    DECLARE v_resultado TEXT;
+
+    IF p_texto IS NULL THEN
+        SET v_resultado = '';
+    ELSE
+        SET v_resultado = p_texto;
+    END IF;
+
+    SET v_usuario = CURRENT_USER();
+    SET v_mensaje = CONCAT('Texto procesado: ', v_resultado);
+
+    INSERT INTO logs_hashy (
+        nombre_funcion,
+        fecha_ejecucion,
+        mensaje_accion,
+        usuario_db
+    )
+    VALUES (
+        'fn_notario',
+        CURRENT_TIMESTAMP,
+        v_mensaje,
+        v_usuario
+    );
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
+
+--Llave 7
+DROP FUNCTION IF EXISTS fn_gran_sello;
+
+DELIMITER $$
+
+CREATE FUNCTION fn_gran_sello(
+    p_texto TEXT
+)
+RETURNS VARCHAR(255)
+DETERMINISTIC
+BEGIN
+    DECLARE v_texto_base TEXT;
+    DECLARE v_hash VARCHAR(255);
+    DECLARE v_resultado VARCHAR(255);
+
+    IF p_texto IS NULL THEN
+        SET v_texto_base = '';
+    ELSE
+        SET v_texto_base = p_texto;
+    END IF;
+
+    SET v_hash = MD5(v_texto_base);
+    SET v_resultado = v_hash;
+
+    RETURN v_resultado;
+END $$
+
+DELIMITER ;
