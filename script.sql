@@ -67,8 +67,6 @@ DELIMITER ;
 
 --Persona B
 --LLAVE 3
-CREATE DATABASE IF NOT EXISTS hashy;
-USE hashy;
 
 DROP FUNCTION IF EXISTS fn_espia_tortuga;
 DROP FUNCTION IF EXISTS fn_purificador;
@@ -141,20 +139,27 @@ CREATE FUNCTION fn_escultor(
 RETURNS TEXT
 DETERMINISTIC
 BEGIN
+    DECLARE v_texto_base TEXT;
     DECLARE v_texto_transformado TEXT;
     DECLARE v_sufijo VARCHAR(50);
     DECLARE v_resultado TEXT;
 
     IF p_texto IS NULL THEN
-        SET v_texto_transformado = '';
+        SET v_texto_base = '';
     ELSE
-        IF p_factor > 1 THEN
-            SET v_texto_transformado = UPPER(p_texto);
-            SET v_sufijo = ' - ALTA PRIORIDAD';
-        ELSE
-            SET v_texto_transformado = LOWER(p_texto);
-            SET v_sufijo = ' - baja prioridad';
-        END IF;
+        SET v_texto_base = p_texto;
+    END IF;
+
+    IF p_factor IS NULL THEN
+        SET p_factor = 1.0;
+    END IF;
+
+    IF p_factor > 1 THEN
+        SET v_texto_transformado = UPPER(v_texto_base);
+        SET v_sufijo = ' - ALTA PRIORIDAD';
+    ELSE
+        SET v_texto_transformado = LOWER(v_texto_base);
+        SET v_sufijo = ' - baja prioridad';
     END IF;
 
     SET v_resultado = CONCAT(v_texto_transformado, v_sufijo);
