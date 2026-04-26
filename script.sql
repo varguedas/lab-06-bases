@@ -1,7 +1,11 @@
+--LAB 6 
+--JIMENA MARIN GOMEZ, DIANA SOLANO RETANA, VICTORIA ARGUEDAS CHACON
+
 CREATE DATABASE IF NOT EXISTS hashy;
 USE hashy;
 
 DELIMITER $$
+
 
 DROP FUNCTION IF EXISTS fn_cernidor $$
 CREATE FUNCTION fn_cernidor(p_id INT)
@@ -67,11 +71,10 @@ DELIMITER ;
 
 --Persona B
 --LLAVE 3
-
-DROP FUNCTION IF EXISTS fn_espia_tortuga;
-DROP FUNCTION IF EXISTS fn_purificador;
-
 DELIMITER $$
+DROP FUNCTION IF EXISTS fn_espia_tortuga $$
+DROP FUNCTION IF EXISTS fn_purificador $$
+
 
 CREATE FUNCTION fn_espia_tortuga(
     p_categoria VARCHAR(100),
@@ -128,9 +131,10 @@ DELIMITER ;
 
 --Persona C
 --LLAVE 5
-DROP FUNCTION IF EXISTS fn_escultor;
-
 DELIMITER $$
+DROP FUNCTION IF EXISTS fn_escultor $$
+
+
 
 CREATE FUNCTION fn_escultor(
     p_texto TEXT,
@@ -170,15 +174,16 @@ END $$
 DELIMITER ;
 
 --Llave 6
-DROP FUNCTION IF EXISTS fn_notario;
-
 DELIMITER $$
+DROP FUNCTION IF EXISTS fn_notario $$
+
+
 
 CREATE FUNCTION fn_notario(
     p_texto TEXT
 )
 RETURNS TEXT
-NOT DETERMINISTIC
+DETERMINISTIC
 MODIFIES SQL DATA
 BEGIN
     DECLARE v_usuario VARCHAR(100);
@@ -213,9 +218,10 @@ END $$
 DELIMITER ;
 
 --Llave 7
-DROP FUNCTION IF EXISTS fn_gran_sello;
-
 DELIMITER $$
+DROP FUNCTION IF EXISTS fn_gran_sello $$
+
+
 
 CREATE FUNCTION fn_gran_sello(
     p_texto TEXT
@@ -240,3 +246,22 @@ BEGIN
 END $$
 
 DELIMITER ;
+USE hashy;
+--Consulta maestra final
+SELECT 
+GROUP_CONCAT(
+    fn_gran_sello(
+        fn_notario(
+            fn_escultor(
+                fn_purificador(ip.nombre_sucio),
+                fn_espia_tortuga(ip.categoria, ip.precio_finca)
+            )
+        )
+    )
+) AS resultado_final
+FROM inventario_pirata ip
+WHERE 
+    fn_cernidor(ip.id) = TRUE
+    AND fn_reloj_arena(ip.fecha_ingreso, ip.meses_validez) = 'Fresco';
+
+--Fin del script
